@@ -1,11 +1,10 @@
 package com.jmbsystems.fjbatresv.mascotassociales.login.ui;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,9 +21,10 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.jmbsystems.fjbatresv.mascotassociales.MascotasSocialesApp;
 import com.jmbsystems.fjbatresv.mascotassociales.R;
+import com.jmbsystems.fjbatresv.mascotassociales.domain.Util;
+import com.jmbsystems.fjbatresv.mascotassociales.enitites.Session;
 import com.jmbsystems.fjbatresv.mascotassociales.login.LoginPresenter;
-import com.jmbsystems.fjbatresv.mascotassociales.login.LoginPresenterImplementation;
-import com.jmbsystems.fjbatresv.mascotassociales.main.MainActivity;
+import com.jmbsystems.fjbatresv.mascotassociales.main.ui.MainActivity;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
@@ -56,6 +56,8 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     RelativeLayout twOpt;
     @Bind(R.id.progressBar)
     ProgressBar progressBar;
+    @Bind(R.id.progressBar2)
+    ProgressBar progressBar2;
     @Bind(R.id.mainLogin)
     Button mainLogin;
     @Bind(R.id.mainLoginFields)
@@ -72,6 +74,8 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
 
     @Inject
     LoginPresenter presenter;
+    @Inject
+    Util util;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,12 +83,9 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
         app = (MascotasSocialesApp) getApplication();
-        if (AccessToken.getCurrentAccessToken() != null ||
-                Twitter.getSessionManager().getActiveSession() != null){
-            //navigateToMainScreen();
-        }
         initInjection();
         presenter.onCreate();
+        presenter.validLogin();
         handleTwLogin();
         handleFbLogin();
     }
@@ -95,6 +96,33 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
         super.onDestroy();
     }
 
+    @Override
+    public void validSession(Map<String, Object> options){
+        if (AccessToken.getCurrentAccessToken() != null){
+            Session.getInstancia().setSessionType(Session.SESSION_FACEBOOK);
+            Object value = options.get("profileImageURL");
+            Session.getInstancia().setImage(String.valueOf(value));
+            value = options.get("id");
+            Session.getInstancia().setUsername(String.valueOf(value));
+            value = options.get("displayName");
+            Session.getInstancia().setNombre(String.valueOf(value));
+        } else if (Twitter.getSessionManager().getActiveSession() != null){
+            Session.getInstancia().setSessionType(Session.SESSION_TWITTER);
+            Object value = options.get("profileImageURL");
+            Session.getInstancia().setImage(String.valueOf(value));
+            value = options.get("username");
+            Session.getInstancia().setUsername(String.valueOf(value));
+            value = options.get("displayName");
+            Session.getInstancia().setNombre(String.valueOf(value));
+        } else {
+            Session.getInstancia().setSessionType(Session.SESSION_LOCAL);
+            Object value = options.get("email");
+            Session.getInstancia().setImage(String.valueOf(util.getavatarUrl(String.valueOf(value))));
+            Session.getInstancia().setUsername(String.valueOf(value));
+            Session.getInstancia().setNombre(String.valueOf(value));
+        }
+    }
+
     private void initInjection() {
         app.getLoginComponent(this).inject(this);
     }
@@ -103,6 +131,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
         twLogin.setCallback(new Callback<TwitterSession>() {
             @Override
             public void success(Result<TwitterSession> result) {
+                progressBar2.setVisibility(View.VISIBLE);
                 Map<String, String> options = new HashMap<String, String>();
                 TwitterSession session = Twitter.getSessionManager().getActiveSession();
                 TwitterAuthToken authToken = session.getAuthToken();
@@ -145,6 +174,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
         fbLogin.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
+                progressBar2.setVisibility(View.VISIBLE);
                 presenter.fbSignin(loginResult.getAccessToken());
             }
 
@@ -227,6 +257,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
 
     @Override
     public void signInSuccess() {
+        progressBar2.setVisibility(View.GONE);
         navigateToMainScreen();
     }
 

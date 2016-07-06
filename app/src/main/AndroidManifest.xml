@@ -13,8 +13,6 @@
         android:name="android.hardware.camera"
         android:required="false" />
 
-    <uses-permission android:name="android.permission.INTERNET" />
-
     <application
         android:name=".MascotasSocialesApp"
         android:allowBackup="true"
@@ -25,8 +23,16 @@
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/FACEBOOK_APP_ID" />
+        <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="@string/GOOGLE_MAPS_API_KEY" />
+        <meta-data
+            android:name="CLOUDINARY_URL"
+            android:value="@string/CLOUDINARY_URL" />
 
-        <activity android:name=".login.ui.LoginActivity">
+        <activity
+            android:name=".login.ui.LoginActivity"
+            android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -48,8 +54,18 @@
             android:name="io.fabric.ApiKey"
             android:value="920d6b1a8bedfe67c531f6ee7a75d518fbb07324" />
 
-        <activity android:name=".main.MainActivity"
-            android:noHistory="true"></activity>
+        <activity
+            android:name=".main.ui.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".photo.ui.PhotoActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".photoList.ui.PhotoListActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".photoMap.ui.PhotoMapActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>

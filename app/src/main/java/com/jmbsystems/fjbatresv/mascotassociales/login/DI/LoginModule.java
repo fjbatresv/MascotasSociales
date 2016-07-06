@@ -1,6 +1,7 @@
 package com.jmbsystems.fjbatresv.mascotassociales.login.DI;
 
 import com.jmbsystems.fjbatresv.mascotassociales.domain.FirebaseApi;
+import com.jmbsystems.fjbatresv.mascotassociales.domain.Util;
 import com.jmbsystems.fjbatresv.mascotassociales.libs.base.EventBus;
 import com.jmbsystems.fjbatresv.mascotassociales.login.LoginInteractor;
 import com.jmbsystems.fjbatresv.mascotassociales.login.LoginInteractorImplementation;
@@ -46,7 +47,7 @@ public class LoginModule {
 
     @Provides
     @Singleton
-    LoginRepository providesLoginRepository(EventBus bus, FirebaseApi api){
-        return new LoginRepositoryImplementation(bus, api);
+    LoginRepository providesLoginRepository(EventBus bus, FirebaseApi api, Util util){
+        return new LoginRepositoryImplementation(bus, api, util);
     }
 }

@@ -14,6 +14,8 @@ public class Photo {
     private String email;
     private double latitude;
     private double longitud;
+    private String tags;
+    private String comentario;
 
     public Photo() {
     }
@@ -32,6 +34,11 @@ public class Photo {
         this.email = email;
         this.latitude = latitude;
         this.longitud = longitud;
+    }
+
+    public Photo(String tags, String comentario) {
+        this.tags = tags;
+        this.comentario = comentario;
     }
 
     public String getId() {
@@ -80,5 +87,21 @@ public class Photo {
 
     public void setLongitud(double longitud) {
         this.longitud = longitud;
+    }
+
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
+    }
+
+    public String getComentario() {
+        return comentario;
+    }
+
+    public void setComentario(String comentario) {
+        this.comentario = comentario;
     }
 }

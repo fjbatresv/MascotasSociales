@@ -1,6 +1,9 @@
 package com.jmbsystems.fjbatresv.mascotassociales.domain;
 
+import android.util.Log;
+
 import com.facebook.AccessToken;
+import com.facebook.login.LoginManager;
 import com.firebase.client.AuthData;
 import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
@@ -8,6 +11,8 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 import com.jmbsystems.fjbatresv.mascotassociales.enitites.Photo;
+import com.jmbsystems.fjbatresv.mascotassociales.enitites.Session;
+import com.twitter.sdk.android.Twitter;
 
 import java.util.Map;
 
@@ -97,8 +102,23 @@ public class FirebaseApi {
         return email;
     }
 
+    public Map<String, Object> viewAuthData(){
+        Map<String, Object> data = firebase.getAuth().getProviderData();
+        for (Map.Entry<String, Object> entry : data.entrySet()){
+            Log.e(entry.getKey(), String.valueOf(entry.getValue()));
+        }
+        return data;
+    }
+
     public void logout(){
         firebase.unauth();
+        if (Session.getInstancia().getSessionType() != Session.SESSION_LOCAL){
+            if (AccessToken.getCurrentAccessToken() != null){
+                LoginManager.getInstance().logOut();
+            }else if (Twitter.getSessionManager().getActiveSession() != null){
+                Twitter.logOut();
+            }
+        }
     }
 
     public void login(String email, String password,  final FirebaseActionListenerCallback callback){

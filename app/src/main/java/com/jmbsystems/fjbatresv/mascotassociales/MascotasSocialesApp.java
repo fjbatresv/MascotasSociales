@@ -16,6 +16,16 @@ import com.jmbsystems.fjbatresv.mascotassociales.login.DI.LoginComponent;
 import com.jmbsystems.fjbatresv.mascotassociales.login.DI.LoginModule;
 import com.jmbsystems.fjbatresv.mascotassociales.login.ui.LoginActivity;
 import com.jmbsystems.fjbatresv.mascotassociales.login.ui.LoginView;
+import com.jmbsystems.fjbatresv.mascotassociales.main.DI.DaggerMainComponent;
+import com.jmbsystems.fjbatresv.mascotassociales.main.DI.MainComponent;
+import com.jmbsystems.fjbatresv.mascotassociales.main.DI.MainModule;
+import com.jmbsystems.fjbatresv.mascotassociales.main.ui.MainActivity;
+import com.jmbsystems.fjbatresv.mascotassociales.main.ui.MainView;
+import com.jmbsystems.fjbatresv.mascotassociales.photo.DI.DaggerPhotoComponent;
+import com.jmbsystems.fjbatresv.mascotassociales.photo.DI.PhotoComponent;
+import com.jmbsystems.fjbatresv.mascotassociales.photo.DI.PhotoModule;
+import com.jmbsystems.fjbatresv.mascotassociales.photo.ui.PhotoActivity;
+import com.jmbsystems.fjbatresv.mascotassociales.photo.ui.PhotoView;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 
@@ -77,10 +87,28 @@ public class MascotasSocialesApp extends Application {
 
     public LoginComponent getLoginComponent(LoginView view){
         return DaggerLoginComponent.builder()
-                .domainModule(domainModule)
-                .libsModule(new LibsModule(null))
                 .mascotasSocialesAppModule(mascotasSocialesAppModule)
+                .domainModule(domainModule)
+                .libsModule(new LibsModule())
                 .loginModule(new LoginModule(view))
+                .build();
+    }
+
+    public MainComponent getMainComponenet(MainView view, MainActivity activity){
+        return DaggerMainComponent.builder()
+                .mascotasSocialesAppModule(mascotasSocialesAppModule)
+                .domainModule(domainModule)
+                .libsModule(new LibsModule())
+                .mainModule(new MainModule(view))
+                .build();
+    }
+
+    public PhotoComponent getPhotoComponent(PhotoView view){
+        return DaggerPhotoComponent.builder()
+                .mascotasSocialesAppModule(mascotasSocialesAppModule)
+                .domainModule(domainModule)
+                .libsModule(new LibsModule())
+                .photoModule(new PhotoModule(view))
                 .build();
     }
 }

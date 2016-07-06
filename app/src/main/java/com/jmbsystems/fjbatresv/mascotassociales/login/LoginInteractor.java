@@ -11,4 +11,6 @@ public interface LoginInteractor {
     void mainSignin(String email, String password);
     void fbSignin(AccessToken token);
     void twSignin(Map<String, String> options);
+
+    void validLogin();
 }

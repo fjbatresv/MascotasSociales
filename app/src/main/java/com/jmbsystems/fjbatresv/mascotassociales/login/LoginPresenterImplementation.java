@@ -63,6 +63,12 @@ public class LoginPresenterImplementation implements LoginPresenter {
             case LoginEvent.SOCIAL_SIGNIN_ERROR:
                 view.signInError(event.getError());
                 break;
+            case LoginEvent.VALID_LOGIN:
+                if (event.getError() == null){
+                    view.validSession(event.getOptions());
+                    view.signInSuccess();
+                }
+                break;
         }
     }
 
@@ -75,5 +81,10 @@ public class LoginPresenterImplementation implements LoginPresenter {
     public void onDestroy() {
         view = null;
         bus.unRegister(this);
+    }
+
+    @Override
+    public void validLogin() {
+        interactor.validLogin();
     }
 }

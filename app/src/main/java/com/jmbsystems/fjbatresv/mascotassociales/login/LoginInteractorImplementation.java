@@ -28,4 +28,9 @@ public class LoginInteractorImplementation implements LoginInteractor {
     public void twSignin(Map<String, String> options) {
         repo.twSignin(options);
     }
+
+    @Override
+    public void validLogin() {
+        repo.validLogin();
+    }
 }

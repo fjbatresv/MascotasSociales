@@ -1,7 +1,7 @@
 package com.jmbsystems.fjbatresv.mascotassociales.libs.DI;
 
 import android.content.Context;
-import android.support.v4.app.Fragment;
+import android.util.Log;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
@@ -27,10 +27,7 @@ import dagger.Provides;
 @Module
 public class LibsModule {
 
-    private Fragment fragment;
-
-    public LibsModule(Fragment fragment) {
-        this.fragment = fragment;
+    public LibsModule() {
     }
 
     @Singleton
@@ -53,14 +50,8 @@ public class LibsModule {
 
     @Singleton
     @Provides
-    public RequestManager providesRequestManager(Fragment fragment){
-        return Glide.with(fragment);
-    }
-
-    @Singleton
-    @Provides
-    public Fragment providesFragment(){
-        return this.fragment;
+    public RequestManager providesRequestManager(Context context){
+        return Glide.with(context);
     }
 
     @Singleton
