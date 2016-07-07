@@ -1,5 +1,7 @@
 package com.jmbsystems.fjbatresv.mascotassociales.login;
 
+import android.util.Log;
+
 import com.facebook.AccessToken;
 import com.jmbsystems.fjbatresv.mascotassociales.libs.base.EventBus;
 import com.jmbsystems.fjbatresv.mascotassociales.login.events.LoginEvent;
@@ -42,6 +44,7 @@ public class LoginPresenterImplementation implements LoginPresenter {
 
     @Override
     public void twSignin(Map<String, String> options) {
+        Log.e("twlogin", "presenter getted");
         interactor.twSignin(options);
     }
 

@@ -48,6 +48,7 @@
     </android.support.design.widget.AppBarLayout>
     <RelativeLayout
         android:layout_width="match_parent"
+        android:padding="@dimen/activity_horizontal_margin"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:id="@+id/container"
         android:layout_height="match_parent">
@@ -98,6 +99,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/btnPhotoSave"
+                android:visibility="gone"
                 android:text="@string/photo.btn.save"/>
             <Button
                 android:layout_width="wrap_content"

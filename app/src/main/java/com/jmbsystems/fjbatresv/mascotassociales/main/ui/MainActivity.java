@@ -39,6 +39,8 @@ import com.jmbsystems.fjbatresv.mascotassociales.libs.base.ImageLoader;
 import com.jmbsystems.fjbatresv.mascotassociales.login.ui.LoginActivity;
 import com.jmbsystems.fjbatresv.mascotassociales.main.MainPresenter;
 import com.jmbsystems.fjbatresv.mascotassociales.photo.ui.PhotoActivity;
+import com.jmbsystems.fjbatresv.mascotassociales.photoList.ui.PhotoListActivity;
+import com.jmbsystems.fjbatresv.mascotassociales.photoMap.ui.PhotoMapActivity;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -76,8 +78,7 @@ public class MainActivity extends AppCompatActivity implements MainView{
     SharedPreferences sharedPreferences;
 
     private MascotasSocialesApp app;
-    private String fotoPath;
-    private static final int REQUEST_PICTURE = 1;
+    public final static String NOMBRE_ORIGEN = "main";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,75 +102,6 @@ public class MainActivity extends AppCompatActivity implements MainView{
         imageLoader = new GlideImageLoader(getApplicationContext());
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_PICTURE){
-            Log.e("activityResult", "picture");
-            if (resultCode == RESULT_OK){
-                Log.e("activityResult", "ok");
-                boolean fromCamera = (data == null || data.getData() == null);
-                Log.e("activityResult", "camara: " + fromCamera);
-
-                if (fromCamera){
-                    Log.e("activityResult", "addGallery | " + fotoPath);
-                    addToGallery();
-                }else{
-                    Log.e("activityResult", "realPathFromUri");
-                    fotoPath = getRealPathFromUri(data.getData());
-                }
-                Log.e("activityResult", "uploadPhoto");
-                startActivity(new Intent(this, PhotoActivity.class)
-                        .putExtra(PhotoActivity.PHOTO_PATH, fotoPath));
-                //presenter.uploadPhoto(lastKnownLocation, fotoPath);
-            }
-        }
-    }
-
-    private String getRealPathFromUri(Uri data) {
-        String result = null;
-        Cursor cursor = getContentResolver().query(data, null, null, null, null);
-        if (cursor == null){
-            result = data.getPath();
-        }else{
-            if (data.toString().contains("mediaKey")){
-                cursor.close();
-                try {
-                    File file = File.createTempFile("tempImg", ".jpg", getCacheDir());
-                    InputStream input = getContentResolver().openInputStream(data);
-                    OutputStream output = new FileOutputStream(file);
-                    try{
-                        byte[] buffer = new byte[ 4* 1024];
-                        int read;
-                        while ((read = input.read(buffer)) != -1){
-                            output.write(buffer, 0, read);
-                        }
-                        output.flush();
-                        result = file.getAbsolutePath();
-                    } finally {
-                        output.close();
-                        input.close();
-                    }
-                } catch (IOException e) {
-                    Log.e("realPathUri", e.toString());
-                }
-            } else {
-                cursor.moveToFirst();
-                int dataColumn = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
-                result = cursor.getString(dataColumn);
-                cursor.close();
-            }
-        }
-        return result;
-    }
-
-    private void addToGallery() {
-        Intent mediaScan = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE );
-        File file = new File(fotoPath);
-        Uri contentUri = Uri.fromFile(file);
-        mediaScan.setData(contentUri);
-        sendBroadcast(mediaScan);
-    }
 
 
     @Override
@@ -180,69 +112,31 @@ public class MainActivity extends AppCompatActivity implements MainView{
         ));
     }
 
+    @OnClick(R.id.photoList)
+    public void photoList(){
+        startActivity(new Intent(this, PhotoListActivity.class));
+    }
+    @OnClick(R.id.photoMap)
+    public void photoMap(){
+        startActivity(new Intent(this, PhotoMapActivity.class));
+    }
 
     @OnClick(R.id.fab)
-    public void tackePicture(){
-        //Esto seria null si el dispositivo no tiene camara o algo
-        Intent chooserIntent = null;
-        List<Intent> intentList = new ArrayList<Intent>();
-        //Elegir imagen de la galeria
-        Intent pickIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        //Tomar fotografia
-        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE).putExtra("return-data", true);
-        File foto = getFile();
-        if (foto != null){
-            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(foto));
-            if (cameraIntent.resolveActivity(getPackageManager()) != null){
-                intentList = addIntentToList(intentList, cameraIntent);
-            }
-        }
-        Log.e("tackePicture", pickIntent.resolveActivity(getPackageManager()).toString());
-        if(pickIntent.resolveActivity(getPackageManager()) != null){
-            Log.e("tackePicture", "pickIntent");
-            intentList = addIntentToList(intentList, pickIntent);
-        }
-        if (intentList.size() > 0){
-            chooserIntent = Intent.createChooser(intentList.remove(intentList.size() - 1)
-                    , getString(R.string.main_message_picture_resource));
-            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentList.toArray(new Parcelable[]{}));
-        }
-        startActivityForResult(chooserIntent, REQUEST_PICTURE);
+    public void takePhoto(){
+        startActivity(
+                new Intent(this, PhotoActivity.class)
+                .putExtra(PhotoActivity.ORIGEN, NOMBRE_ORIGEN)
+        );
     }
 
-    private File getFile(){
-        File foto = null;
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        try {
-            foto = File.createTempFile(imageFileName, ".jpg", storageDir);
-            fotoPath = foto.getAbsolutePath();
-        } catch (IOException e) {
-            showSnackBar(getString(R.string.main_error_dispatch_camera));
-            Log.e("getFile", e.toString());
-        }
-        return foto;
-    }
+
 
     private void showSnackBar(String message){
         Snackbar.make(container, message, Snackbar.LENGTH_LONG).show();
     }
-    private List<Intent> addIntentToList(List<Intent> list, Intent intent){
-        //Esto recibe las aplicaciones que pueden recibir el intent
-        List<ResolveInfo> resInfo = getPackageManager().queryIntentActivities(intent, 0);
-        for (ResolveInfo resolveInfo : resInfo){
-            String packageName = resolveInfo.activityInfo.packageName;
-            Intent target = new Intent(intent);
-            target.setPackage(packageName);
-            list.add(target);
-        }
-        return list;
-    }
 
     private void setupToolbar() {
         loggedName.setText(Session.getInstancia().getNombre());
-        Log.e("avatar", Session.getInstancia().getImage());
         imageLoader.load(loggedAvatar, Session.getInstancia().getImage());
         setSupportActionBar(toolbar);
     }

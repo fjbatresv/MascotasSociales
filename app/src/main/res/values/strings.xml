@@ -29,4 +29,5 @@
     <string name="photo.hint.comentario">Comentario</string>
     <string name="photo.btn.save">Guardar</string>
     <string name="photo.btn.cancel">Cancelar</string>
+    <string name="photolist_message_share">Compartir fotografia</string>
 </resources>

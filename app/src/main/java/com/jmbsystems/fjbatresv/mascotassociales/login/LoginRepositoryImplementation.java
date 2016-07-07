@@ -37,7 +37,7 @@ public class LoginRepositoryImplementation implements LoginRepository {
                 Map<String, Object> options = api.viewAuthData();
                 Object value = options.get("email");
                 Session.getInstancia().setImage(String.valueOf(util.getavatarUrl(String.valueOf(value))));
-                Session.getInstancia().setUsername(String.valueOf(value));
+                Session.getInstancia().setUsername(String.valueOf(value) + "|" + String.valueOf(Session.SESSION_LOCAL));
                 Session.getInstancia().setNombre(String.valueOf(value));
                 post(LoginEvent.SIGNIN_SUCCESS, null, null);
             }
@@ -59,7 +59,7 @@ public class LoginRepositoryImplementation implements LoginRepository {
                 Object value = options.get("profileImageURL");
                 Session.getInstancia().setImage(String.valueOf(value));
                 value = options.get("id");
-                Session.getInstancia().setUsername(String.valueOf(value));
+                Session.getInstancia().setUsername(String.valueOf(value) + "|" + String.valueOf(Session.SESSION_FACEBOOK));
                 value = options.get("displayName");
                 Log.e("nombre", value.toString());
                 Session.getInstancia().setNombre(String.valueOf(value));
@@ -75,15 +75,17 @@ public class LoginRepositoryImplementation implements LoginRepository {
 
     @Override
     public void twSignin(Map<String, String> options) {
+        Log.e("twlogin", "repo received");
         api.loginTwitter(options, new FirebaseActionListenerCallback() {
             @Override
             public void onSuccess() {
+                Log.e("twlogin", "repo auth");
                 Map<String, Object> options = api.viewAuthData();
                 Session.getInstancia().setSessionType(Session.SESSION_TWITTER);
                 Object value = options.get("profileImageURL");
                 Session.getInstancia().setImage(String.valueOf(value));
                 value = options.get("username");
-                Session.getInstancia().setUsername(String.valueOf(value));
+                Session.getInstancia().setUsername(String.valueOf(value) + "|" + String.valueOf(Session.SESSION_TWITTER));
                 value = options.get("displayName");
                 Log.e("nombre", value.toString());
                 Session.getInstancia().setNombre(String.valueOf(value));

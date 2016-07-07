@@ -26,6 +26,16 @@ import com.jmbsystems.fjbatresv.mascotassociales.photo.DI.PhotoComponent;
 import com.jmbsystems.fjbatresv.mascotassociales.photo.DI.PhotoModule;
 import com.jmbsystems.fjbatresv.mascotassociales.photo.ui.PhotoActivity;
 import com.jmbsystems.fjbatresv.mascotassociales.photo.ui.PhotoView;
+import com.jmbsystems.fjbatresv.mascotassociales.photoList.DI.DaggerPhotoListComponent;
+import com.jmbsystems.fjbatresv.mascotassociales.photoList.DI.PhotoListComponent;
+import com.jmbsystems.fjbatresv.mascotassociales.photoList.DI.PhotoListModule;
+import com.jmbsystems.fjbatresv.mascotassociales.photoList.ui.PhotoListView;
+import com.jmbsystems.fjbatresv.mascotassociales.photoList.ui.adapters.OnItemClickListener;
+import com.jmbsystems.fjbatresv.mascotassociales.photoMap.DI.DaggerPhotoMapComponent;
+import com.jmbsystems.fjbatresv.mascotassociales.photoMap.DI.PhotoMapComponent;
+import com.jmbsystems.fjbatresv.mascotassociales.photoMap.DI.PhotoMapModule;
+import com.jmbsystems.fjbatresv.mascotassociales.photoMap.ui.PhotoMapActivity;
+import com.jmbsystems.fjbatresv.mascotassociales.photoMap.ui.PhotoMapView;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 
@@ -109,6 +119,24 @@ public class MascotasSocialesApp extends Application {
                 .domainModule(domainModule)
                 .libsModule(new LibsModule())
                 .photoModule(new PhotoModule(view))
+                .build();
+    }
+
+    public PhotoListComponent getPhotoListComponent(PhotoListView view, OnItemClickListener listener){
+        return DaggerPhotoListComponent.builder()
+                .mascotasSocialesAppModule(mascotasSocialesAppModule)
+                .domainModule(domainModule)
+                .libsModule(new LibsModule())
+                .photoListModule(new PhotoListModule(view, listener))
+                .build();
+    }
+
+    public PhotoMapComponent getPhotoMapComponent(PhotoMapView view) {
+        return DaggerPhotoMapComponent.builder()
+                .mascotasSocialesAppModule(mascotasSocialesAppModule)
+                .domainModule(domainModule)
+                .libsModule(new LibsModule())
+                .photoMapModule(new PhotoMapModule(view))
                 .build();
     }
 }

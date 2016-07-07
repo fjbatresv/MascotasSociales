@@ -1,6 +1,7 @@
 package com.jmbsystems.fjbatresv.mascotassociales.photo;
 
 import android.location.Location;
+import android.util.Log;
 
 import com.jmbsystems.fjbatresv.mascotassociales.domain.FirebaseApi;
 import com.jmbsystems.fjbatresv.mascotassociales.enitites.Photo;
@@ -31,7 +32,9 @@ public class PhotoRepositoryImplementation implements PhotoRepository {
     public void uploadPhoto(Location location, String path, final Photo foto) {
         final String newFotoId = api.create();
         foto.setId(newFotoId);
-        foto.setEmail(Session.getInstancia().getUsername() + "|" + String.valueOf(Session.getInstancia().getSessionType()));
+        foto.setEmail(Session.getInstancia().getUsername());
+        foto.setAvatar(Session.getInstancia().getImage());
+        foto.setNombre(Session.getInstancia().getNombre());
         if (location != null){
             foto.setLatitude(location.getLatitude());
             foto.setLongitud(location.getLongitude());
@@ -43,6 +46,7 @@ public class PhotoRepositoryImplementation implements PhotoRepository {
                 String url = storage.getImageUrl(newFotoId);
                 foto.setUrl(url);
                 api.update(foto);
+                Log.e("foto", "guardado repo");
                 post(PhotoEvent.UPLOAD_COMPLETE, null);
             }
 
@@ -55,6 +59,6 @@ public class PhotoRepositoryImplementation implements PhotoRepository {
     }
 
     private void post(int type, String error){
-        bus.post(new MainEvent(type, error));
+        bus.post(new PhotoEvent(type, error));
     }
 }

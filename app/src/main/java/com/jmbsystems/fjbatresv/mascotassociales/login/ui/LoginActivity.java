@@ -131,13 +131,15 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
         twLogin.setCallback(new Callback<TwitterSession>() {
             @Override
             public void success(Result<TwitterSession> result) {
-                progressBar2.setVisibility(View.VISIBLE);
+                Log.e("twlogin", "success");
                 Map<String, String> options = new HashMap<String, String>();
                 TwitterSession session = Twitter.getSessionManager().getActiveSession();
                 TwitterAuthToken authToken = session.getAuthToken();
+                Log.e("twlogin", "data taken");
                 options.put("oauth_token", authToken.token);
                 options.put("oauth_token_secret", authToken.secret);
                 options.put("user_id", String.valueOf(session.getUserId()));
+                Log.e("twlogin", "data setted");
                 presenter.twSignin(options);
             }
 
@@ -174,7 +176,6 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
         fbLogin.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                progressBar2.setVisibility(View.VISIBLE);
                 presenter.fbSignin(loginResult.getAccessToken());
             }
 
@@ -257,7 +258,6 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
 
     @Override
     public void signInSuccess() {
-        progressBar2.setVisibility(View.GONE);
         navigateToMainScreen();
     }
 

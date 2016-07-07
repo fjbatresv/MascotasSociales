@@ -12,6 +12,8 @@ public class Photo {
     private boolean publishedByMe;
     private String url;
     private String email;
+    private String nombre;
+    private String avatar;
     private double latitude;
     private double longitud;
     private String tags;
@@ -103,5 +105,34 @@ public class Photo {
 
     public void setComentario(String comentario) {
         this.comentario = comentario;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        boolean respuesta = false;
+        if ( o instanceof Photo){
+            Photo current = (Photo) o;
+            respuesta = (this.email.equals(current.getEmail()) && this.url.equals(current.getUrl())
+                    && String.valueOf(current.getLatitude()).equals(String.valueOf(this.latitude))
+                    && String.valueOf(current.getLongitud()).equals(String.valueOf(this.longitud))
+                    && this.id.equals(current.getId()));
+        }
+        return respuesta;
     }
 }

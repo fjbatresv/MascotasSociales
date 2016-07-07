@@ -4,14 +4,19 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.database.Cursor;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
+import android.os.Environment;
+import android.os.Parcelable;
+import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -31,6 +36,18 @@ import com.jmbsystems.fjbatresv.mascotassociales.libs.GlideImageLoader;
 import com.jmbsystems.fjbatresv.mascotassociales.libs.base.ImageLoader;
 import com.jmbsystems.fjbatresv.mascotassociales.main.ui.MainActivity;
 import com.jmbsystems.fjbatresv.mascotassociales.photo.PhotoPresenter;
+import com.jmbsystems.fjbatresv.mascotassociales.photoList.ui.PhotoListActivity;
+import com.jmbsystems.fjbatresv.mascotassociales.photoMap.ui.PhotoMapActivity;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -57,13 +74,15 @@ public class PhotoActivity extends AppCompatActivity implements PhotoView,
     EditText tags;
     @Bind(R.id.comentario)
     EditText comentario;
+    @Bind(R.id.btnPhotoSave)
+    Button btnPhotoSave;
 
     @Inject
     PhotoPresenter presenter;
 
     private ImageLoader imageLoader;
 
-    public static final String PHOTO_PATH = "photoPath";
+    public final static String ORIGEN = "origen";
 
     private MascotasSocialesApp app;
     private String fotoPath;
@@ -84,12 +103,11 @@ public class PhotoActivity extends AppCompatActivity implements PhotoView,
         setupToolbar();
         setupGoogleApiClient();
         presenter.onCreate();
-        path.setText(getIntent().getStringExtra(PHOTO_PATH));
+        tackePicture();
     }
 
     private void setupToolbar() {
         loggedName.setText(Session.getInstancia().getNombre());
-        Log.e("avatar", Session.getInstancia().getImage());
         imageLoader.load(loggedAvatar, Session.getInstancia().getImage());
         setSupportActionBar(toolbar);
     }
@@ -99,18 +117,37 @@ public class PhotoActivity extends AppCompatActivity implements PhotoView,
         imageLoader = new GlideImageLoader(getApplicationContext());
     }
 
+    @Override
+    public void onBackPressed() {
+        back();
+    }
+
     @OnClick(R.id.btnPhotoCancel)
     public void back(){
-        startActivity(new Intent(this, MainActivity.class).addFlags(
+        Class origen = MainActivity.class;
+        switch (getIntent().getStringExtra(ORIGEN)){
+            case MainActivity.NOMBRE_ORIGEN:
+                origen = MainActivity.class;
+                break;
+            case PhotoListActivity.NOMBRE_ORIGEN:
+                origen = PhotoListActivity.class;
+                break;
+            case PhotoMapActivity.NOMBRE_ORIGEN:
+                origen = PhotoMapActivity.class;
+                break;
+        }
+        startActivity(new Intent(this, origen).addFlags(
                 Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK
-                | Intent.FLAG_ACTIVITY_NEW_TASK
+                        | Intent.FLAG_ACTIVITY_NEW_TASK
         ));
     }
 
     @OnClick(R.id.btnPhotoSave)
     public void savePhoto(){
-        presenter.uploadPhoto(lastKnownLocation, path.getText().toString(), new Photo(tags.getText().toString(),
-                comentario.getText().toString()));
+        if (path.getText().toString() != null && !path.getText().toString().isEmpty()){
+            presenter.uploadPhoto(lastKnownLocation, path.getText().toString(), new Photo(tags.getText().toString(),
+                    comentario.getText().toString()));
+        }
     }
 
     @Override
@@ -161,7 +198,6 @@ public class PhotoActivity extends AppCompatActivity implements PhotoView,
                     .addOnConnectionFailedListener(this)
                     .addApi(LocationServices.API).build();
         }
-        Log.e("ApiClient", apiClient.toString());
     }
 
     @Override
@@ -182,7 +218,9 @@ public class PhotoActivity extends AppCompatActivity implements PhotoView,
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 requestPermissions(new String[]{
                         Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE
                 }, PERMISSIONS_REQUEST_LOCATION);
             }
             return;
@@ -193,7 +231,6 @@ public class PhotoActivity extends AppCompatActivity implements PhotoView,
     private void setLastLocation() {
         if (LocationServices.FusedLocationApi.getLocationAvailability(apiClient).isLocationAvailable()){
             lastKnownLocation = LocationServices.FusedLocationApi.getLastLocation(apiClient);
-            showSnackBar(lastKnownLocation.toString());
         } else {
             showSnackBar(getString(R.string.main_error_location_not_available));
         }
@@ -213,7 +250,6 @@ public class PhotoActivity extends AppCompatActivity implements PhotoView,
             try {
                 connectionResult.startResolutionForResult(this, REQUEST_RESOLVE_ERROR);
             } catch (IntentSender.SendIntentException e) {
-                Log.e("ConnectionFailed", e.toString());
             }
         }else{
             resolvingError = true;
@@ -223,4 +259,119 @@ public class PhotoActivity extends AppCompatActivity implements PhotoView,
                     .show();
         }
     }//MAPS END
+
+    //TAKE PHOTO
+    public void tackePicture(){
+        //Esto seria null si el dispositivo no tiene camara o algo
+        Intent chooserIntent = null;
+        List<Intent> intentList = new ArrayList<Intent>();
+        //Elegir imagen de la galeria
+        Intent pickIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        //Tomar fotografia
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE).putExtra("return-data", true);
+        File foto = getFile();
+        if (foto != null){
+            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(foto));
+            if (cameraIntent.resolveActivity(getPackageManager()) != null){
+                intentList = addIntentToList(intentList, cameraIntent);
+            }
+        }
+        if(pickIntent.resolveActivity(getPackageManager()) != null){
+            intentList = addIntentToList(intentList, pickIntent);
+        }
+        if (intentList.size() > 0){
+            chooserIntent = Intent.createChooser(intentList.remove(intentList.size() - 1)
+                    , getString(R.string.main_message_picture_resource));
+            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentList.toArray(new Parcelable[]{}));
+        }
+        startActivityForResult(chooserIntent, REQUEST_PICTURE);
+    }
+
+    private File getFile(){
+        File foto = null;
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        try {
+            foto = File.createTempFile(imageFileName, ".jpg", storageDir);
+            fotoPath = foto.getAbsolutePath();
+        } catch (IOException e) {
+            showSnackBar(getString(R.string.main_error_dispatch_camera));
+        }
+        return foto;
+    }
+
+    private List<Intent> addIntentToList(List<Intent> list, Intent intent){
+        //Esto recibe las aplicaciones que pueden recibir el intent
+        List<ResolveInfo> resInfo = getPackageManager().queryIntentActivities(intent, 0);
+        for (ResolveInfo resolveInfo : resInfo){
+            String packageName = resolveInfo.activityInfo.packageName;
+            Intent target = new Intent(intent);
+            target.setPackage(packageName);
+            list.add(target);
+        }
+        return list;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_PICTURE){
+            if (resultCode == RESULT_OK){
+                boolean fromCamera = (data == null || data.getData() == null);
+                if (fromCamera){
+                    addToGallery();
+                }else{
+                    fotoPath = getRealPathFromUri(data.getData());
+                }
+                path.setText(fotoPath);
+                btnPhotoSave.setVisibility(View.VISIBLE);
+            }
+        }
+    }
+
+    private String getRealPathFromUri(Uri data) {
+        String result = null;
+        Cursor cursor = getContentResolver().query(data, null, null, null, null);
+        if (cursor == null){
+            result = data.getPath();
+        }else{
+            if (data.toString().contains("mediaKey")){
+                cursor.close();
+                try {
+                    File file = File.createTempFile("tempImg", ".jpg", getCacheDir());
+                    InputStream input = getContentResolver().openInputStream(data);
+                    OutputStream output = new FileOutputStream(file);
+                    try{
+                        byte[] buffer = new byte[ 4* 1024];
+                        int read;
+                        while ((read = input.read(buffer)) != -1){
+                            output.write(buffer, 0, read);
+                        }
+                        output.flush();
+                        result = file.getAbsolutePath();
+                    } finally {
+                        output.close();
+                        input.close();
+                    }
+                } catch (IOException e) {
+                }
+            } else {
+                cursor.moveToFirst();
+                int dataColumn = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+                result = cursor.getString(dataColumn);
+                cursor.close();
+            }
+        }
+        return result;
+    }
+
+    private void addToGallery() {
+        Intent mediaScan = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE );
+        File file = new File(fotoPath);
+        Uri contentUri = Uri.fromFile(file);
+        mediaScan.setData(contentUri);
+        sendBroadcast(mediaScan);
+    }
+    //Take Photo end
 }

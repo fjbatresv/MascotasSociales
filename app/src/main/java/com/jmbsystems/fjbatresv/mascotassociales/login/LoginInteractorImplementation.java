@@ -1,5 +1,7 @@
 package com.jmbsystems.fjbatresv.mascotassociales.login;
 
+import android.util.Log;
+
 import com.facebook.AccessToken;
 
 import java.util.Map;
@@ -26,6 +28,8 @@ public class LoginInteractorImplementation implements LoginInteractor {
 
     @Override
     public void twSignin(Map<String, String> options) {
+
+        Log.e("twlogin", "interactor received");
         repo.twSignin(options);
     }
 
