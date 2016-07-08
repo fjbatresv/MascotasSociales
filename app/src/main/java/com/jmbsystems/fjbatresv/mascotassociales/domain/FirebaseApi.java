@@ -22,14 +22,18 @@ import java.util.Map;
  */
 public class FirebaseApi {
     private Firebase firebase;
+    private Firebase chat;
+    private Firebase photo;
     private ChildEventListener photosEventListener;
 
     public FirebaseApi(Firebase firebase) {
         this.firebase = firebase;
+        this.photo = firebase.getRoot().child("fotos");
+        this.chat = firebase.getRoot().child("chat");
     }
 
     public void cheackForData(final FirebaseActionListenerCallback callback){
-        firebase.addListenerForSingleValueEvent(new ValueEventListener() {
+        photo.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getChildrenCount() > 0){
@@ -70,26 +74,26 @@ public class FirebaseApi {
                     callback.onCancelled(firebaseError);
                 }
             };
-            firebase.addChildEventListener(photosEventListener);
+            photo.addChildEventListener(photosEventListener);
         }
     }
 
     public void unSubscribe(){
         if (photosEventListener != null){
-            firebase.removeEventListener(photosEventListener);
+            photo.removeEventListener(photosEventListener);
         }
     }
 
     public String create(){
-        return firebase.push().getKey();
+        return photo.push().getKey();
     }
 
     public void update(Photo Photo){
-        this.firebase.child(Photo.getId()).setValue(Photo);
+        this.photo.child(Photo.getId()).setValue(Photo);
     }
 
     public void remove(Photo Photo, FirebaseActionListenerCallback callback){
-        this.firebase.child(Photo.getId()).removeValue();
+        this.photo.child(Photo.getId()).removeValue();
         callback.onSuccess();
     }
 
@@ -185,5 +189,9 @@ public class FirebaseApi {
         }else{
             callback.onError(null);
         }
+    }
+
+    public Firebase getChatMessage(){
+        return chat;
     }
 }

@@ -27,7 +27,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/fbLogin"
-                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="25dp"
                 android:layout_centerInParent="true"/>
         </RelativeLayout>
         <RelativeLayout
@@ -101,8 +101,8 @@
                     <Button
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/login.button.cancel"
-                        android:id="@+id/mainLoginCancel" />
+                        android:text="@string/login.button.signup"
+                        android:id="@+id/btnSignup" />
                 </LinearLayout>
                 <ProgressBar
                     android:layout_width="wrap_content"
@@ -127,5 +127,14 @@
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:id="@+id/twLogin"/>
         </RelativeLayout>
+        <ProgressBar
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:visibility="gone"
+            android:id="@+id/progressBar2"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true" />
     </LinearLayout>
 </LinearLayout>

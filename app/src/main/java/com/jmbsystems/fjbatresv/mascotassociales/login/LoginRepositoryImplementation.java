@@ -37,7 +37,7 @@ public class LoginRepositoryImplementation implements LoginRepository {
                 Map<String, Object> options = api.viewAuthData();
                 Object value = options.get("email");
                 Session.getInstancia().setImage(String.valueOf(util.getavatarUrl(String.valueOf(value))));
-                Session.getInstancia().setUsername(String.valueOf(value) + "|" + String.valueOf(Session.SESSION_LOCAL));
+                Session.getInstancia().setUsername(String.valueOf(value));
                 Session.getInstancia().setNombre(String.valueOf(value));
                 post(LoginEvent.SIGNIN_SUCCESS, null, null);
             }
@@ -45,6 +45,22 @@ public class LoginRepositoryImplementation implements LoginRepository {
             @Override
             public void onError(FirebaseError error) {
                 post(LoginEvent.SIGNIN_ERROR, error.getMessage(), null);
+            }
+        });
+    }
+
+    @Override
+    public void mainSignup(final String email, final String password) {
+        api.signup(email, password, new FirebaseActionListenerCallback() {
+            @Override
+            public void onSuccess() {
+                post(LoginEvent.SIGNUP_SUCCESS, null, null);
+                mainSignin(email, password);
+            }
+
+            @Override
+            public void onError(FirebaseError error) {
+                post(LoginEvent.SIGNUP_ERROR, error.getMessage(), null);
             }
         });
     }
@@ -59,7 +75,7 @@ public class LoginRepositoryImplementation implements LoginRepository {
                 Object value = options.get("profileImageURL");
                 Session.getInstancia().setImage(String.valueOf(value));
                 value = options.get("id");
-                Session.getInstancia().setUsername(String.valueOf(value) + "|" + String.valueOf(Session.SESSION_FACEBOOK));
+                Session.getInstancia().setUsername(String.valueOf(value));
                 value = options.get("displayName");
                 Log.e("nombre", value.toString());
                 Session.getInstancia().setNombre(String.valueOf(value));
@@ -85,7 +101,7 @@ public class LoginRepositoryImplementation implements LoginRepository {
                 Object value = options.get("profileImageURL");
                 Session.getInstancia().setImage(String.valueOf(value));
                 value = options.get("username");
-                Session.getInstancia().setUsername(String.valueOf(value) + "|" + String.valueOf(Session.SESSION_TWITTER));
+                Session.getInstancia().setUsername(String.valueOf(value));
                 value = options.get("displayName");
                 Log.e("nombre", value.toString());
                 Session.getInstancia().setNombre(String.valueOf(value));

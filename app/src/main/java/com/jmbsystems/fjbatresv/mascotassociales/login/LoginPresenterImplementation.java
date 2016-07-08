@@ -33,18 +33,24 @@ public class LoginPresenterImplementation implements LoginPresenter {
 
     @Override
     public void mainSignin(String email, String password) {
-        view.handleProgressbar(true);
+        view.handleProgressbar(true, 1);
         interactor.mainSignin(email, password);
     }
 
     @Override
+    public void mainSignup(String email, String password) {
+        interactor.mainSignup(email, password);
+    }
+
+    @Override
     public void fbSignin(AccessToken token) {
+        view.handleProgressbar(true, 2);
         interactor.fbSignin(token);
     }
 
     @Override
     public void twSignin(Map<String, String> options) {
-        Log.e("twlogin", "presenter getted");
+        view.handleProgressbar(true, 2);
         interactor.twSignin(options);
     }
 
@@ -53,17 +59,27 @@ public class LoginPresenterImplementation implements LoginPresenter {
     public void onEventMainThread(LoginEvent event) {
         switch (event.getType()){
             case LoginEvent.SIGNIN_SUCCESS:
-                view.handleProgressbar(false);
+                view.handleProgressbar(false, 1);
                 view.signInSuccess();
                 break;
             case LoginEvent.SIGNIN_ERROR:
-                view.handleProgressbar(false);
+                view.handleProgressbar(false, 1);
                 view.signInError(event.getError());
                 break;
+            case LoginEvent.SIGNUP_SUCCESS:
+                view.handleProgressbar(false, 1);
+                view.signUpSuccess();
+                break;
+            case LoginEvent.SIGNUP_ERROR:
+                view.handleProgressbar(false, 1);
+                view.signUpError(event.getError());
+                break;
             case LoginEvent.SOCIAL_SIGNIN_SUCCESS:
+                view.handleProgressbar(false, 2);
                 view.signInSuccess();
                 break;
             case LoginEvent.SOCIAL_SIGNIN_ERROR:
+                view.handleProgressbar(false, 2);
                 view.signInError(event.getError());
                 break;
             case LoginEvent.VALID_LOGIN:

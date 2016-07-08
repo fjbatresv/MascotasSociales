@@ -85,4 +85,6 @@ dependencies {
     }
     compile 'com.android.support:support-v4:23.3.0'
     compile "com.facebook.android:facebook-android-sdk:$rootProject.ext.facebookVersion"
+    //Esta es una liberia que encontre en github: https://github.com/fjbatresv/android-about-page
+    compile 'com.github.medyo:android-about-page:1.0.2'
 }

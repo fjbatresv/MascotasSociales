@@ -261,6 +261,7 @@ public class PhotoActivity extends AppCompatActivity implements PhotoView,
     }//MAPS END
 
     //TAKE PHOTO
+    @OnClick(R.id.fab)
     public void tackePicture(){
         //Esto seria null si el dispositivo no tiene camara o algo
         Intent chooserIntent = null;

@@ -7,9 +7,14 @@ import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 import com.firebase.client.Firebase;
+import com.jmbsystems.fjbatresv.mascotassociales.chat.DI.ChatComponent;
+import com.jmbsystems.fjbatresv.mascotassociales.chat.DI.ChatModule;
+import com.jmbsystems.fjbatresv.mascotassociales.chat.DI.DaggerChatComponent;
+import com.jmbsystems.fjbatresv.mascotassociales.chat.ui.ChatView;
 import com.jmbsystems.fjbatresv.mascotassociales.domain.DI.DomainModule;
 import com.jmbsystems.fjbatresv.mascotassociales.domain.FirebaseApi;
 import com.jmbsystems.fjbatresv.mascotassociales.domain.FirebaseEventListenerCallback;
+import com.jmbsystems.fjbatresv.mascotassociales.enitites.Session;
 import com.jmbsystems.fjbatresv.mascotassociales.libs.DI.LibsModule;
 import com.jmbsystems.fjbatresv.mascotassociales.login.DI.DaggerLoginComponent;
 import com.jmbsystems.fjbatresv.mascotassociales.login.DI.LoginComponent;
@@ -48,6 +53,7 @@ public class MascotasSocialesApp extends Application {
 
     private DomainModule domainModule;
     private MascotasSocialesAppModule mascotasSocialesAppModule;
+    private LibsModule libsModule;
 
     @Override
     public void onCreate() {
@@ -61,6 +67,7 @@ public class MascotasSocialesApp extends Application {
     private void initModule() {
         mascotasSocialesAppModule = new MascotasSocialesAppModule(this);
         domainModule = new DomainModule();
+        libsModule = new LibsModule();
     }
 
     private void initFirebase() {
@@ -72,6 +79,16 @@ public class MascotasSocialesApp extends Application {
                 BuildConfig.TWITTER_KEY, BuildConfig.TWITTER_SECRET
         );
         Fabric.with(this, new Twitter(authConfig));
+    }
+
+    public void validSessionInit(){
+        if (Session.getInstancia().getNombre() == null
+                && Session.getInstancia().getUsername() == null){
+            startActivity(new Intent(this, LoginActivity.class).setFlags(
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            | Intent.FLAG_ACTIVITY_NEW_TASK
+            ));
+        }
     }
 
     private void initFacebook() {
@@ -99,7 +116,7 @@ public class MascotasSocialesApp extends Application {
         return DaggerLoginComponent.builder()
                 .mascotasSocialesAppModule(mascotasSocialesAppModule)
                 .domainModule(domainModule)
-                .libsModule(new LibsModule())
+                .libsModule(libsModule)
                 .loginModule(new LoginModule(view))
                 .build();
     }
@@ -108,7 +125,7 @@ public class MascotasSocialesApp extends Application {
         return DaggerMainComponent.builder()
                 .mascotasSocialesAppModule(mascotasSocialesAppModule)
                 .domainModule(domainModule)
-                .libsModule(new LibsModule())
+                .libsModule(libsModule)
                 .mainModule(new MainModule(view))
                 .build();
     }
@@ -117,7 +134,7 @@ public class MascotasSocialesApp extends Application {
         return DaggerPhotoComponent.builder()
                 .mascotasSocialesAppModule(mascotasSocialesAppModule)
                 .domainModule(domainModule)
-                .libsModule(new LibsModule())
+                .libsModule(libsModule)
                 .photoModule(new PhotoModule(view))
                 .build();
     }
@@ -126,7 +143,7 @@ public class MascotasSocialesApp extends Application {
         return DaggerPhotoListComponent.builder()
                 .mascotasSocialesAppModule(mascotasSocialesAppModule)
                 .domainModule(domainModule)
-                .libsModule(new LibsModule())
+                .libsModule(libsModule)
                 .photoListModule(new PhotoListModule(view, listener))
                 .build();
     }
@@ -135,8 +152,17 @@ public class MascotasSocialesApp extends Application {
         return DaggerPhotoMapComponent.builder()
                 .mascotasSocialesAppModule(mascotasSocialesAppModule)
                 .domainModule(domainModule)
-                .libsModule(new LibsModule())
+                .libsModule(libsModule)
                 .photoMapModule(new PhotoMapModule(view))
+                .build();
+    }
+
+    public ChatComponent getChatComponent(ChatView view){
+        return DaggerChatComponent.builder()
+                .mascotasSocialesAppModule(mascotasSocialesAppModule)
+                .domainModule(domainModule)
+                .libsModule(libsModule)
+                .chatModule(new ChatModule(view))
                 .build();
     }
 }

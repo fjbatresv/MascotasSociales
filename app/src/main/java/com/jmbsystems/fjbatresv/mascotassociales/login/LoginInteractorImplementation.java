@@ -22,6 +22,11 @@ public class LoginInteractorImplementation implements LoginInteractor {
     }
 
     @Override
+    public void mainSignup(String email, String password) {
+        repo.mainSignup(email, password);
+    }
+
+    @Override
     public void fbSignin(AccessToken token) {
         repo.fbSignin(token);
     }

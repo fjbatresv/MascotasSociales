@@ -11,6 +11,8 @@ public class LoginEvent {
     public static final int SOCIAL_SIGNIN_SUCCESS = 2;
     public static final int SOCIAL_SIGNIN_ERROR = 3;
     public static final int VALID_LOGIN = 4;
+    public static final int SIGNUP_SUCCESS = 5;
+    public static final int SIGNUP_ERROR = 6;
     private int type;
     private String error;
     private Map<String, Object> options;

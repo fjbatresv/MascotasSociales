@@ -30,9 +30,7 @@
             android:name="CLOUDINARY_URL"
             android:value="@string/CLOUDINARY_URL" />
 
-        <activity
-            android:name=".login.ui.LoginActivity"
-            android:noHistory="true">
+        <activity android:name=".login.ui.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -59,15 +57,19 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".photo.ui.PhotoActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".photoList.ui.PhotoListActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".main.ui.MainActivity"/>
+            android:parentActivityName=".main.ui.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".photoMap.ui.PhotoMapActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".main.ui.MainActivity"/>
+            android:parentActivityName=".main.ui.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".chat.ui.ChatActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".about.AboutActivity"></activity>
     </application>
 
 </manifest>

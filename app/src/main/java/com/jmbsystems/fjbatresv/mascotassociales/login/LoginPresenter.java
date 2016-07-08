@@ -11,6 +11,7 @@ import java.util.Map;
 public interface LoginPresenter {
     void handleMainLogin(boolean accion);
     void mainSignin(String email, String password);
+    void mainSignup(String email, String password);
     void fbSignin(AccessToken token);
     void twSignin(Map<String, String> options);
     void onEventMainThread(LoginEvent event);

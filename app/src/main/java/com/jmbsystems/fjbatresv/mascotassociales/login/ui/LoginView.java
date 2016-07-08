@@ -7,9 +7,11 @@ import java.util.Map;
  */
 public interface LoginView {
     void handleSocialNetworks(boolean mostrar);
-    void handleProgressbar(boolean mostrar);
+    void handleProgressbar(boolean mostrar, int barra);
     void handleMainLoginFields(boolean mostrar);
     void signInSuccess();
     void signInError(String error);
+    void signUpSuccess();
+    void signUpError(String error);
     void validSession(Map<String, Object> options);
 }

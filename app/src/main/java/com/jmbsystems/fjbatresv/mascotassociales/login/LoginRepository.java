@@ -9,6 +9,7 @@ import java.util.Map;
  */
 public interface LoginRepository {
     void mainSignin(String email, String password);
+    void mainSignup(String email, String password);
     void fbSignin(AccessToken token);
     void twSignin(Map<String, String> options);
 

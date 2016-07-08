@@ -85,15 +85,24 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
         app = (MascotasSocialesApp) getApplication();
         initInjection();
         presenter.onCreate();
-        presenter.validLogin();
         handleTwLogin();
         handleFbLogin();
+        presenter.validLogin();
     }
 
     @Override
     protected void onDestroy() {
         presenter.onDestroy();
         super.onDestroy();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mainLoginFields.getVisibility() == View.VISIBLE){
+            presenter.handleMainLogin(false);
+        }else{
+            super.onBackPressed();
+        }
     }
 
     @Override
@@ -176,15 +185,17 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
         fbLogin.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
+                Log.e("fblogin", "succes");
                 presenter.fbSignin(loginResult.getAccessToken());
             }
 
             @Override
-            public void onCancel() {
+            public void onCancel() {Log.e("fblogin", "cancel");
             }
 
             @Override
             public void onError(FacebookException error) {
+                Log.e("fblogin", error.getLocalizedMessage());
                 Snackbar.make(container, String.format(
                         getString(R.string.login_error_message),
                         error.getLocalizedMessage()
@@ -207,14 +218,15 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.e("activity", "result get ");
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
         twLogin.onActivityResult(requestCode, resultCode, data);
     }
 
-    @OnClick(R.id.mainLoginCancel)
+    @OnClick(R.id.btnSignup)
     public void handleMainLoginCancel(){
-        presenter.handleMainLogin(false);
+        presenter.mainSignup(txtEmail.getText().toString(), txtPassword.getText().toString());
     }
 
     @OnClick(R.id.btnSignin)
@@ -233,12 +245,28 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     }
 
     @Override
-    public void handleProgressbar(boolean mostrar) {
+    public void handleProgressbar(boolean mostrar, int barra) {
         int visible = View.VISIBLE;
-        if (!mostrar){
-            visible = View.GONE;
+        int inVisible = View.GONE;
+        if (barra == 1){
+            if (mostrar){
+                progressBar.setVisibility(visible);
+            }else {
+                progressBar.setVisibility(inVisible);
+            }
+        }else {
+            if (mostrar){
+                progressBar2.setVisibility(visible);
+                mainOpt.setVisibility(inVisible);
+                fbOpt.setVisibility(inVisible);
+                twOpt.setVisibility(inVisible);
+            }else{
+                progressBar2.setVisibility(inVisible);
+                mainOpt.setVisibility(visible);
+                fbOpt.setVisibility(visible);
+                twOpt.setVisibility(visible);
+            }
         }
-        progressBar.setVisibility(visible);
     }
 
     @Override
@@ -263,6 +291,17 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
 
     @Override
     public void signInError(String error) {
+        Log.e("error login", error);
         Snackbar.make(container, String.format(getString(R.string.login_error_message), error), Snackbar.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void signUpSuccess() {
+        Snackbar.make(container, getString(R.string.login_signup_success_message), Snackbar.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void signUpError(String error) {
+        Snackbar.make(container, String.format(getString(R.string.login_signup_error_message), error), Snackbar.LENGTH_LONG).show();
     }
 }

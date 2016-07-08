@@ -1,38 +1,21 @@
 package com.jmbsystems.fjbatresv.mascotassociales.main.ui;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.database.Cursor;
-import android.location.Location;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Environment;
-import android.os.Parcelable;
-import android.provider.MediaStore;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
-import android.widget.Switch;
 import android.widget.TextView;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
 import com.jmbsystems.fjbatresv.mascotassociales.MascotasSocialesApp;
 import com.jmbsystems.fjbatresv.mascotassociales.R;
+import com.jmbsystems.fjbatresv.mascotassociales.about.AboutActivity;
+import com.jmbsystems.fjbatresv.mascotassociales.chat.ui.ChatActivity;
 import com.jmbsystems.fjbatresv.mascotassociales.enitites.Session;
 import com.jmbsystems.fjbatresv.mascotassociales.libs.GlideImageLoader;
 import com.jmbsystems.fjbatresv.mascotassociales.libs.base.ImageLoader;
@@ -41,16 +24,6 @@ import com.jmbsystems.fjbatresv.mascotassociales.main.MainPresenter;
 import com.jmbsystems.fjbatresv.mascotassociales.photo.ui.PhotoActivity;
 import com.jmbsystems.fjbatresv.mascotassociales.photoList.ui.PhotoListActivity;
 import com.jmbsystems.fjbatresv.mascotassociales.photoMap.ui.PhotoMapActivity;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -120,6 +93,14 @@ public class MainActivity extends AppCompatActivity implements MainView{
     public void photoMap(){
         startActivity(new Intent(this, PhotoMapActivity.class));
     }
+    @OnClick(R.id.chat)
+    public void chat(){
+        startActivity(new Intent(this, ChatActivity.class));
+    }
+    @OnClick(R.id.about)
+    public void about(){
+        startActivity(new Intent(this, AboutActivity.class));
+    }
 
     @OnClick(R.id.fab)
     public void takePhoto(){
@@ -128,8 +109,6 @@ public class MainActivity extends AppCompatActivity implements MainView{
                 .putExtra(PhotoActivity.ORIGEN, NOMBRE_ORIGEN)
         );
     }
-
-
 
     private void showSnackBar(String message){
         Snackbar.make(container, message, Snackbar.LENGTH_LONG).show();

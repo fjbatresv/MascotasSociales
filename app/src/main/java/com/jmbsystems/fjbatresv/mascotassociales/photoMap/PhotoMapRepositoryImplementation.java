@@ -6,6 +6,7 @@ import com.jmbsystems.fjbatresv.mascotassociales.domain.FirebaseActionListenerCa
 import com.jmbsystems.fjbatresv.mascotassociales.domain.FirebaseApi;
 import com.jmbsystems.fjbatresv.mascotassociales.domain.FirebaseEventListenerCallback;
 import com.jmbsystems.fjbatresv.mascotassociales.enitites.Photo;
+import com.jmbsystems.fjbatresv.mascotassociales.enitites.Session;
 import com.jmbsystems.fjbatresv.mascotassociales.libs.base.EventBus;
 import com.jmbsystems.fjbatresv.mascotassociales.photoMap.events.PhotoMapEvent;
 
@@ -42,7 +43,7 @@ public class PhotoMapRepositoryImplementation implements PhotoMapRepository {
             public void onChildAdded(DataSnapshot dataSnapshot) {
                 Photo foto = dataSnapshot.getValue(Photo.class);
                 foto.setId(dataSnapshot.getKey());
-                String email = api.getAuthEmail();
+                String email = Session.getInstancia().getUsername();
                 foto.setPublishedByMe(email.equals(foto.getEmail()));
                 post(PhotoMapEvent.READ_EVENT, foto, null);
             }
