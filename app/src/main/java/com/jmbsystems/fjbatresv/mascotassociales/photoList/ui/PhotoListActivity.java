@@ -76,6 +76,7 @@ public class PhotoListActivity extends AppCompatActivity implements PhotoListVie
         setContentView(R.layout.activity_photo_list);
         ButterKnife.bind(this);
         app = (MascotasSocialesApp) getApplication();
+        app.validSessionInit();
         setupInjection();
         setupToolbar();
         setUpRecyclerView();

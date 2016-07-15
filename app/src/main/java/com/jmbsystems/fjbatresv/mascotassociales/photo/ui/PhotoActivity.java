@@ -99,6 +99,7 @@ public class PhotoActivity extends AppCompatActivity implements PhotoView,
         setContentView(R.layout.activity_photo);
         ButterKnife.bind(this);
         app = (MascotasSocialesApp) getApplication();
+        app.validSessionInit();
         setupInjection();
         setupToolbar();
         setupGoogleApiClient();
@@ -325,6 +326,7 @@ public class PhotoActivity extends AppCompatActivity implements PhotoView,
                 }else{
                     fotoPath = getRealPathFromUri(data.getData());
                 }
+                app.validSessionInit();
                 path.setText(fotoPath);
                 btnPhotoSave.setVisibility(View.VISIBLE);
             }

@@ -91,6 +91,7 @@ public class PhotoMapActivity extends AppCompatActivity implements PhotoMapView,
         setContentView(R.layout.activity_photo_map);
         ButterKnife.bind(this);
         app = (MascotasSocialesApp) getApplication();
+        app.validSessionInit();
         markers = new HashMap<Marker, Photo>();
         setupInjection();
         presenter.onCreate();

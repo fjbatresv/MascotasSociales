@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
+import com.jmbsystems.fjbatresv.mascotassociales.MascotasSocialesApp;
 import com.jmbsystems.fjbatresv.mascotassociales.R;
 
 import mehdi.sakout.aboutpage.AboutPage;
@@ -11,11 +12,14 @@ import mehdi.sakout.aboutpage.Element;
 
 public class AboutActivity extends AppCompatActivity {
 
+    private MascotasSocialesApp app;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Element version = new Element();
+        app = (MascotasSocialesApp) getApplication();
         version.setTitle("Versión 1.0");
+        app.validSessionInit();
         View about = new AboutPage(this)
                 .isRTL(false)
                 .addItem(version)

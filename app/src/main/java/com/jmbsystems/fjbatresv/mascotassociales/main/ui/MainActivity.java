@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements MainView{
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         app = (MascotasSocialesApp) getApplication();
+        app.validSessionInit();
         setupInjection();
         setupToolbar();
         presenter.onCreate();
@@ -108,6 +109,13 @@ public class MainActivity extends AppCompatActivity implements MainView{
                 new Intent(this, PhotoActivity.class)
                 .putExtra(PhotoActivity.ORIGEN, NOMBRE_ORIGEN)
         );
+    }
+
+    public void onBackPressed() {
+        Intent startMain = new Intent(Intent.ACTION_MAIN);
+        startMain.addCategory(Intent.CATEGORY_HOME);
+        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(startMain);
     }
 
     private void showSnackBar(String message){

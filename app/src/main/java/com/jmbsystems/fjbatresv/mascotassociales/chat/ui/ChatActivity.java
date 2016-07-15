@@ -64,6 +64,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView{
         setContentView(R.layout.activity_chat);
         ButterKnife.bind(this);
         app = (MascotasSocialesApp ) getApplication();
+        app.validSessionInit();
         setupInjection();
         setupToolbar();
         presenter.onCreate();
